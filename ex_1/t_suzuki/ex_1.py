@@ -60,9 +60,9 @@ fig.canvas.draw()
 ax0pos = axes[0].get_position()
 ax1pos = axes[1].get_position()
 ax2pos = axes[2].get_position()
-axes[0].set_position([ax0pos.x0, ax0pos.y0, ax1pos.width, ax0pos.height])
-axes[1].set_position([ax1pos.x0, ax1pos.y0, ax1pos.width, ax1pos.height])
-axes[2].set_position([ax2pos.x0, ax2pos.y0, ax1pos.width, ax2pos.height])
+axes[0].set_position([ax0pos.x0, ax0pos.y0, ax1pos.width, ax1pos.height])
+# axes[1].set_position([ax1pos.x0, ax1pos.y0, ax1pos.width, ax1pos.height])
+axes[2].set_position([ax2pos.x0, ax2pos.y0, ax1pos.width, ax1pos.height])
 
 # タイトル
 axes[0].set_title("Original signal")
