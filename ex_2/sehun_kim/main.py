@@ -29,7 +29,7 @@ def HPF(data_array, cf, sr):
     ir = np.append(h_back, h_front)
     window = np.hamming(len(h))
     ir = ir * window
-    return ir
+    return ir[len(ir): len(ir)]
 
 
 def LPF(data_array, cf, sr):

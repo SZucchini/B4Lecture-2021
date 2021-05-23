@@ -6,18 +6,20 @@
 
 1. 本リポジトリを自分のアカウントにフォークする
   (右上のForkボタンを押す)
+  
+2. フォークした自分のリポジトリに自動的に遷移する。
 
-2. フォークしたリポジトリを適当な場所へクローンする
+3. フォークした自分のリポジトリを適当な場所へダウンロードする。(リポジトリページ右上の[↓Code]ボタンからURLをコピー)
 
     ```bash
-    $ git clone https://github.com/TakedaLab/B4Lecture-2021.git
+    $ git clone <自分のgithubのURL>
     ```
 
-3. 本家リポジトリを登録 (upstreamという名前でなくてもいい)
+4. 本家リポジトリを登録 (upstreamという名前でなくてもいい)
 
     ```bash
     $ cd B4Lecture-2021
-    $ git remote add upstream https://github.com/<自分の名前>/B4Lecture-2021.git
+    $ git remote add upstream https://github.com/TakedaLab/B4Lecture-2021.git
     ```
 
 
