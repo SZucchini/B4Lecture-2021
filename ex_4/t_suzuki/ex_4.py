@@ -79,7 +79,7 @@ def predict_base_freq(data, sr, method, frame_size, overlap, lifter):
     return np.array(res)
 
 
-def cept_spectrum(frame_data, lifter):
+def cept_spectral(frame_data, lifter):
     """
     input
     frame_data : ndarray
@@ -89,7 +89,7 @@ def cept_spectrum(frame_data, lifter):
 
     output
     cep_env : ndarray
-              envelope spectrum of ceptrum
+              spectral envelope of ceptrum
     """
 
     cep = cepstrum(frame_data)
@@ -143,7 +143,7 @@ def levinson_durbin(cor, lpc_order):
     return a, e[-1]
 
 
-def lpc_spectrum(frame_data, lpc_order, frame_size):
+def lpc_spectral(frame_data, lpc_order, frame_size):
     """
     input
     frame_data : ndarray
@@ -155,7 +155,7 @@ def lpc_spectrum(frame_data, lpc_order, frame_size):
 
     output
     lpc_env : ndarray
-              spectrum envelope of LPC
+              spectral envelope of LPC
     """
 
     cor = auto_correlation(frame_data)
@@ -177,7 +177,7 @@ def main():
     parser.add_argument("--lpc_order", type=int, default=32, help="input lpc order")
     parser.add_argument("--frame", type=int, default=1024, help="data frame size")
     parser.add_argument("--overlap", type=float, default=0.5, help="overlap rate")
-    parser.add_argument("--start_idx", type=int, default=31000, help="start index of spectrum envelope")
+    parser.add_argument("--start_idx", type=int, default=31000, help="start index of spectral envelope")
     args = parser.parse_args()
 
     # check output dir
@@ -193,12 +193,12 @@ def main():
     f0_label = np.arange(0, time[-1], time[-1] / len(f0))
     spec = sp.spec(data, args.frame, args.overlap)
 
-    # caluculate spectrum by ceptrum and lpc
+    # caluculate spectral envelope by ceptrum and lpc
     f_label = np.fft.fftfreq(1024, d=1.0/sr)
     frame_data = data[args.start_idx:args.start_idx+args.frame] * np.hamming(args.frame)
     fft_log = 20 * np.log10(np.abs(np.fft.fft(frame_data)))
-    cep_env = cept_spectrum(frame_data, args.lifter)
-    lpc_env = lpc_spectrum(frame_data, args.lpc_order, args.frame)
+    cep_env = cept_spectral(frame_data, args.lifter)
+    lpc_env = lpc_spectral(frame_data, args.lpc_order, args.frame)
 
     # plot data and save figure
     # fundamental frequency
@@ -217,15 +217,15 @@ def main():
 
     # spectrum envelope
     fig, ax = plt.subplots()
-    ax.plot(f_label[:args.frame//2], fft_log[:len(fft_log)//2], label="Spectrum", color="yellowgreen")
+    ax.plot(f_label[:args.frame//2], fft_log[:len(fft_log)//2], label="Spectral", color="yellowgreen")
     ax.plot(f_label[:args.frame//2], cep_env[:len(cep_env)//2], label="Cepstrum", color="royalblue")
     ax.plot(f_label[:args.frame//2], lpc_env[:len(lpc_env)//2], label="LPC", color="aqua")
     ax.legend()
-    ax.set(title="Spectrum envelope",
+    ax.set(title="Spectral envelope",
            xlabel="Frequency [Hz]",
            ylabel="Amplitude [dB]")
     plt.show(block=True)
-    fig.savefig('./out/spectrum_envelope.png')
+    fig.savefig('./out/spectral_envelope.png')
 
 
 if __name__ == '__main__':
