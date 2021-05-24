@@ -9,7 +9,10 @@ import matplotlib.pyplot as plt
 
 def auto_correlation(data):
     """
-    add description
+    input  : ndarray
+             audio data
+    output : ndarray
+             autoccorelation data
     """
     
     n = len(data)
@@ -22,7 +25,10 @@ def auto_correlation(data):
 
 def cepstrum(data):
     """
-    add description later
+    input  : ndarray
+             audio  data
+    output : ndarray
+             cepstrum
     """
 
     fft_log = np.log10(np.abs(np.fft.fft(data)))
@@ -33,7 +39,23 @@ def cepstrum(data):
 
 def predict_base_freq(data, sr, method, frame_size, overlap, lifter):
     """
-    add description
+    input
+    data : ndarray
+           audio data
+    sr : int
+         sampling rate
+    method : str
+             correlation or cepstrum
+    frame_size : int
+                 fft frame size
+    overlap : float
+              fft overlap rate
+    lifter : int
+             lifter order
+
+    output
+    res : ndarray
+          fundamental frequency
     """
 
     res = []
@@ -59,7 +81,15 @@ def predict_base_freq(data, sr, method, frame_size, overlap, lifter):
 
 def cept_spectrum(frame_data, lifter):
     """
-    add description
+    input
+    frame_data : ndarray
+                 part of audio data
+    lifter : int
+             lifter order
+
+    output
+    cep_env : ndarray
+              envelope spectrum of ceptrum
     """
 
     cep = cepstrum(frame_data)
@@ -71,7 +101,17 @@ def cept_spectrum(frame_data, lifter):
 
 def levinson_durbin(cor, lpc_order):
     """
-    add description
+    input
+    cor : ndarray
+          autocorrelation data
+    lpc_order : int
+                lpc_order
+
+    output
+    a : ndarray
+        coefficient of LPC
+    e : ndarray
+        resudual varience
     """
 
     a = np.zeros(lpc_order + 1)
@@ -105,7 +145,17 @@ def levinson_durbin(cor, lpc_order):
 
 def lpc_spectrum(frame_data, lpc_order, frame_size):
     """
-    add description
+    input
+    frame_data : ndarray
+                 part of audio data
+    lpc_order : int
+                lpc_order
+    frame_size : int
+                 frame_data size
+
+    output
+    lpc_env : ndarray
+              spectrum envelope of LPC
     """
 
     cor = auto_correlation(frame_data)
