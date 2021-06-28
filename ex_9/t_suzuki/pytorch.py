@@ -34,7 +34,7 @@ def feature_extraction(path_list):
     load_data = (lambda path: librosa.load(path)[0])
 
     data = list(map(load_data, path_list))
-    features = np.array([np.mean(librosa.feature.mfcc(y=y, n_mfcc=19), axis=1) for y in data])
+    features = np.array([np.mean(librosa.feature.mfcc(y=y, n_mfcc=20), axis=1) for y in data])
 
     return features
 
@@ -84,7 +84,7 @@ def write_result(paths, outputs):
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(19, 255)
+        self.fc1 = nn.Linear(20, 255)
         self.fc2 = nn.Linear(255, 255)
         self.fc3 = nn.Linear(255, 10)
 
@@ -176,8 +176,8 @@ def main():
         avg_val_loss = val_loss / len(valid_loader.dataset)
         avg_val_acc = val_acc / len(valid_loader.dataset)
 
-        print ('Epoch [{}/{}], Loss: {loss:.4f}, val_loss: {val_loss:.4f}, val_acc: {val_acc:.4f}'
-                   .format(epoch+1, epochs, i+1, loss=avg_train_loss, val_loss=avg_val_loss, val_acc=avg_val_acc))
+        # print ('Epoch [{}/{}], Loss: {loss:.4f}, val_loss: {val_loss:.4f}, val_acc: {val_acc:.4f}'
+                   # .format(epoch+1, epochs, i+1, loss=avg_train_loss, val_loss=avg_val_loss, val_acc=avg_val_acc))
 
         train_loss_list.append(avg_train_loss)
         train_acc_list.append(avg_train_acc)
@@ -216,8 +216,8 @@ def main():
         plot_confusion_matrix(pred, truth_values, f'Accuracy: {test_acc:.2%}')
         print("Test accuracy: ", test_acc)
 
-    model_path = f'./model/model_acc_{test_acc:.2%}.pth'
-    torch.save(net.to(device).state_dict(), model_path)
+    # model_path = f'./model/model_acc_{test_acc:.2%}.pth'
+    # torch.save(net.to(device).state_dict(), model_path)
 
 
 if __name__ == "__main__":
