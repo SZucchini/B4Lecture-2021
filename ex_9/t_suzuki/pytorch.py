@@ -1,6 +1,7 @@
 from __future__ import division
 from __future__ import print_function
 
+import os
 import argparse
 import librosa
 import matplotlib.pyplot as plt
@@ -51,14 +52,16 @@ def plot_confusion_matrix(predict, ground_truth, title=None, cmap=plt.cm.Blues):
     """
 
     cm = confusion_matrix(predict, ground_truth)
-    plt.figure()
+    fig = plt.figure()
     plt.imshow(cm, interpolation="nearest", cmap=cmap)
     plt.title(title)
     plt.colorbar()
     plt.tight_layout()
     plt.ylabel("Predicted")
     plt.xlabel("Ground truth")
-    plt.show()
+    plt.show(block=True)
+    fig.savefig(f'./out/confusion_matrix.png')
+
 
 
 def write_result(paths, outputs):
@@ -95,10 +98,13 @@ class Net(nn.Module):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--path_to_truth", type=str, help='テストデータの正解ファイルCSVのパス')
-    parser.add_argument("--batch_size", type=int, default=8, help='training batch size')
-    parser.add_argument("--lr", type=float, default=1, help='learning rate')
-    parser.add_argument("--epochs", type=int, default=70, help='number of epochs')
+    parser.add_argument("--batch_size", type=int, default=16, help='training batch size')
+    parser.add_argument("--lr", type=float, default=0.98, help='learning rate')
+    parser.add_argument("--epochs", type=int, default=100, help='number of epochs')
     args = parser.parse_args()
+
+    if not os.path.exists('./out'):
+        os.makedirs('./out')
 
     batch_size = args.batch_size
     lr = args.lr
@@ -137,7 +143,7 @@ def main():
     net = Net().to(device)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adadelta(net.parameters(), lr=lr)
+    optimizer = optim.Adadelta(net.parameters(), lr=lr, rho=0.96)
 
     train_loss_list, train_acc_list, val_loss_list, val_acc_list = [], [], [], []
 
@@ -178,6 +184,26 @@ def main():
         val_loss_list.append(avg_val_loss)
         val_acc_list.append(avg_val_acc)
 
+    fig = plt.figure()
+    plt.plot(train_loss_list, label='training')
+    plt.plot(val_loss_list, label='validation')
+    plt.xlabel('Iterations')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show(block=True)
+    fig.savefig(f'./out/loss_batch{batch_size}_epoch{epochs}_lr{lr}.png')
+    plt.close()
+
+    fig = plt.figure()
+    plt.plot(train_acc_list, label='training')
+    plt.plot(val_acc_list, label='validation')
+    plt.xlabel('Iterations')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.show(block=True)
+    fig.savefig(f'./out/acc_batch{batch_size}_epoch{epochs}_lr{lr}.png')
+    plt.close()
+
     x_test = scaler.transform(X_test)
     x_test = torch.from_numpy(x_test).float()
     outputs = net(x_test)
@@ -186,8 +212,12 @@ def main():
     if args.path_to_truth:
         test_truth = pd.read_csv(args.path_to_truth)
         truth_values = test_truth['label'].values
-        plot_confusion_matrix(pred, truth_values)
-        print("Test accuracy: ", accuracy_score(truth_values, pred))
+        test_acc = accuracy_score(truth_values, pred)
+        plot_confusion_matrix(pred, truth_values, f'Accuracy: {test_acc:.2%}')
+        print("Test accuracy: ", test_acc)
+
+    model_path = f'./model/model_acc_{test_acc:.2%}.pth'
+    torch.save(net.to(device).state_dict(), model_path)
 
 
 if __name__ == "__main__":
